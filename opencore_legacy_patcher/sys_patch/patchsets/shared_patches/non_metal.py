@@ -38,6 +38,14 @@ class NonMetal(BaseSharedPatchSet):
                     "/System/Applications": {
                         **({ "Photo Booth.app": "11.7.9"} if self._xnu_major >= os_data.monterey else {}),
                     },
+                    "/usr/sbin": {
+                        **({ "screencapture": "14.7"} if self._xnu_major >= os_data.sequoia else {}),
+                    },
+                    "/System/Library/CoreServices/RemoteManagement": {
+                        **({"ScreensharingAgent.bundle": "14.7.2"} if self._xnu_major >= os_data.sequoia else {}),
+                        **({"screensharingd.bundle":     "14.7.2"} if self._xnu_major >= os_data.sequoia else {}),
+                        **({"SSMenuAgent.app":           "14.7.2"} if self._xnu_major >= os_data.sequoia else {}),
+                    },
                 },
                 PatchType.REMOVE_SYSTEM_VOLUME: {
                     "/System/Library/Extensions": [
@@ -67,6 +75,9 @@ class NonMetal(BaseSharedPatchSet):
                         "IOGPUFamily.kext",
                         "AppleAfterburner.kext",
                     ],
+                    "/System/Library/ExtensionKit/Extensions/": [
+                        "WallpaperMacintoshExtension.appex"
+                    ],
                 },
                 PatchType.OVERWRITE_DATA_VOLUME: {
                     "/Library/Application Support/SkyLightPlugins": {
@@ -94,7 +105,7 @@ class NonMetal(BaseSharedPatchSet):
                     "/usr/bin/defaults write /Library/Preferences/.GlobalPreferences.plist WebKitExperimentalUseGPUProcessForCanvasRenderingEnabled -bool false": True,
                     **({"/usr/bin/defaults write /Library/Preferences/.GlobalPreferences.plist WebKitPreferences.acceleratedDrawingEnabled -bool false": True} if self._xnu_major >= os_data.sonoma else {}),
                     **({"/usr/bin/defaults write /Library/Preferences/.GlobalPreferences.plist NSEnableAppKitMenus -bool false": True} if self._xnu_major >= os_data.sonoma else {}),
-                    **({"/usr/bin/defaults write /Library/Preferences/.GlobalPreferences.plist NSZoomButtonShowMenu -bool false": True} if self._xnu_major >= os_data.sonoma else {}),
+                    **({"/usr/bin/defaults write /Library/Preferences/.GlobalPreferences.plist NSZoomButtonShowMenu -bool false": True} if self._xnu_major == os_data.sonoma else {}),
                 },
             },
         }

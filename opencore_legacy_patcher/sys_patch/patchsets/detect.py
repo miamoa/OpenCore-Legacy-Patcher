@@ -44,6 +44,7 @@ from .hardware.misc import (
     pcie_webcam,
     t1_security,
     usb11,
+    cpu_missing_avx,
 )
 
 from ... import constants
@@ -133,6 +134,7 @@ class HardwarePatchsetDetection:
             pcie_webcam.PCIeFaceTimeCamera,
             t1_security.T1SecurityChip,
             usb11.USB11Controller,
+            cpu_missing_avx.CPUMissingAVX,
         ]
 
         self.device_properties = None
@@ -219,12 +221,12 @@ class HardwarePatchsetDetection:
         nv_on = utilities.get_nvram("boot-args", decode=True)
         if nv_on:
             if "ngfxgl=" in nv_on:
-                return True
+                return False
         for gpu in self._constants.computer.gpus:
             if isinstance(gpu, device_probe.NVIDIA):
                 if gpu.disable_metal is True:
-                    return True
-        return False
+                    return False
+        return True
 
 
     def _validation_check_force_compat_missing(self) -> bool:
@@ -234,12 +236,12 @@ class HardwarePatchsetDetection:
         nv_on = utilities.get_nvram("boot-args", decode=True)
         if nv_on:
             if "ngfxcompat=" in nv_on:
-                return True
+                return False
         for gpu in self._constants.computer.gpus:
             if isinstance(gpu, device_probe.NVIDIA):
                 if gpu.force_compatible is True:
-                    return True
-        return False
+                    return False
+        return True
 
 
     def _validation_check_nvda_drv_missing(self) -> bool:
@@ -249,11 +251,11 @@ class HardwarePatchsetDetection:
         nv_on = utilities.get_nvram("boot-args", decode=True)
         if nv_on:
             if "nvda_drv_vrl=" in nv_on:
-                return True
+                return False
         nv_on = utilities.get_nvram("nvda_drv")
         if nv_on:
-            return True
-        return False
+            return False
+        return True
 
 
     @cache
@@ -366,7 +368,7 @@ class HardwarePatchsetDetection:
             logging.error("Stripping out Non-Metal GPUs")
             for hardware in list(present_hardware):
                 if hardware.hardware_variant_graphics_subclass() == HardwareVariantGraphicsSubclass.NON_METAL_GRAPHICS:
-                    print(f"  Stripping out {hardware.name()}")
+                    logging.info(f"  Stripping out {hardware.name()}")
                     present_hardware.remove(hardware)
 
         if metal_3802_gpu_present and metal_31001_gpu_present and self._xnu_major >= os_data.sequoia.value:

@@ -78,7 +78,9 @@ class AMDPolaris(BaseHardware):
         # For MacBookPro13,3 missing framebuffers (ex. 'ATY,Berbice')
         if self._computer.real_model in ["MacBookPro13,3"]:
             # Since dropped at the same time, we can use the same patches
-            return AMDLegacyGCN(self._xnu_major, self._xnu_minor, self._os_build, self._constants)._model_specific_patches()
+            result = AMDLegacyGCN(self._xnu_major, self._xnu_minor, self._os_build, self._constants)._model_specific_patches()
+            # Have to rename 'AMD Legacy GCN' to 'AMD Polaris' for model detection
+            return {"AMD Polaris": result["AMD Legacy GCN"]}
 
         # For MacBookPro14,3 (and other AMD dGPUs that no longer function in Sonoma)
         # iMac18,2/3 still function with the generic framebuffer, however if issues arise
@@ -137,10 +139,9 @@ class AMDPolaris(BaseHardware):
                 **AMDOpenCL(self._xnu_major, self._xnu_minor, self._constants.detected_os_version).patches(),
             })
 
-        if self._is_gpu_architecture_present(gpu_architectures=[device_probe.Intel.Archs.Skylake]) is False:
-            # Monterey GVA is not required for Intel Skylake iGPUs
-            _base.update({
-                **MontereyGVA(self._xnu_major, self._xnu_minor, self._constants.detected_os_version).patches(),
-            })
+        # AMD GCN and newer GPUs can still use the native GVA stack
+        _base.update({
+            **MontereyGVA(self._xnu_major, self._xnu_minor, self._constants.detected_os_version).revert_patches(),
+        })
 
         return _base

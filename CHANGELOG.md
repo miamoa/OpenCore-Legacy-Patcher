@@ -1,5 +1,77 @@
 # OpenCore Legacy Patcher changelog
 
+## 2.3.0
+- Disable crash analytics
+  - Disabled server side for years, removing client side
+
+## 2.2.0
+- Resolved non-metal accessibility zoom on macOS Sonoma/Sequoia
+- Resolved non-metal photos app on macOS Sequoia
+- Resolved non-metal Screen Sharing on macOS Sequoia
+- Resolved non-metal inverted screenshots on macOS Sequoia
+- Improved non-metal beta menubar reliability
+- Disabled non-metal broken weather background animations on macOS Sequoia
+- Resolved non-metal safari hide distracting items crash on macOS Sequoia
+- Resolved non-metal full screen transition on macOS Sonoma/Sequoia
+- Resolved T1 Apple Pay on macOS Sequoia
+- Resolved T1 TouchID support on macOS Sequoia 15.2
+- Resolved iCloud sync problems
+- Resolved JavaScriptCore on pre-AVX Macs on macOS Sequoia 15.2/Safari 18.2
+- Increment binaries:
+  - PatcherSupportPkg 1.9.1 - release
+
+## 2.1.2
+- Add additional error handling for when building OpenCore errors out
+  - Prevents broken EFI from being installed to disk
+- Add additional error handling for broken settings file from OCLP 2.1.0
+  - If typing for settings is wrong, app will skip setting it, delete from settings file and use default
+  - Delete `/Users/Shared/.com.dortania.opencore-legacy-patcher.plist` and restart app to avoid this issue
+- Add additional warning about OCLP 2.1.0 bug where certain settings saved incorrectly
+  - Delete `/Users/Shared/.com.dortania.opencore-legacy-patcher.plist` and restart app if `TypeError: unsupported type: <class 'NoneType'>` error occurs
+
+## 2.1.1
+- Resolve boolean GUI settings saving incorrectly as Python's None type
+
+## 2.1.0
+- Disable FeatureUnlock by default
+  - Intended to maintain long term stability
+  - If features unlocked by FeatureUnlock desired, can be enabled in settings
+- Disable mediaanalysisd on Metal 3802-based GPUs
+  - Intended to maintain long term stability
+  - If Live Text support desired, can be enabled in settings
+- Support for retaining GUI settings when building on-model
+  - When switching to a different model, model-specific GUI settings will be reset
+  - Note resetting saved settings not implemented yet
+    - Delete `/Users/Shared/.com.dortania.opencore-legacy-patcher.plist` and restart app to reset settings
+- Resolve macOS 15.1 (24B2083) Apple Silicon installer appearing as download option
+- Resolve WhatsApp crashing on 15.1
+- Increment binaries:
+  - PatcherSupportPkg 1.8.4 - release
+
+## 2.0.2
+- Fix Nvidia Kepler patches not installing on Monterey
+- Fix `iMac7,1` and `iMac8,1` failing to apply root patches on macOS Sequoia
+- Avoid downgrading AppleGVA stack on AMD GCN and newer GPUs
+  - Resolves VTDecoderXPC crashes
+  - Thanks @ausdauersportler for the catch!
+- Resolve glitched widgets on 3802-based GPUs running macOS Sequoia 15.1
+- Resolve CoreImage crashes on 3802-based GPUs running macOS Sequoia
+- Resolve missing screen capture crop borders on non-Metal GPUs running macOS Sequoia
+- Resolve TeraScale 2 HDCP kernel panic
+- Resolve specific Wallpaper locking up on non-Metal GPUs running macOS Sequoia
+  - Removes unsupported Metal-based wallpaper (Macintosh Wallpaper)
+- Resolve firmware upload incompatibilities on pre-2012 Macs with 2012+ Airport cards
+  - Thanks @ausdauersportler for the catch!
+- Resolve `diskutil` failing to be located in the installer creation process
+  - Thanks @niklasravnsborg for the report!
+- Increment binaries:
+  - PatcherSupportPkg 1.8.3 - release
+
+## 2.0.1
+- Fix MacBookPro13,3 listing 'Available patches' after having installed all applicable patches
+- Fix Nvidia Tesla and Kepler patches not installing on Monterey (and older if applicable)
+- Fix Nvidia Web Drivers incorrectly listing 'OpenGL', 'compat' and 'nvda_drv(_vrl)' missing
+
 ## 2.0.0
 - Set `AssociatedBundleIdentifiers` property in launch services as an array
 - Move to auto-generated pre/postinstall scripts for PKGs
@@ -18,20 +90,23 @@
 - Resolve AMD Navi MXM GPU detection for modded iMac9,x-12,x
   - Thanks @Ausdauersportler for the patch!
 - Implement early macOS Sequoia support:
-  - Supporting Macs with Metal-based graphics:
-    - MacBook8,1 - 10,1
-    - MacBookAir5,x - 7,x
-    - MacBookPro9,x - 14,x
-    - Macmini6,x - 7,1
-    - iMac13,x - 18,x
-      - iMac10,1 - 12,x included if Metal GPU installed.
+  - Supporting Macs with Metal and non-Metal-based graphics:
+    - MacBook5,x - 10,1
+    - MacBookAir2,x - 7,x
+    - MacBookPro4,1 - 14,x
+    - Macmini3,1 - 7,1
+    - iMac7,1 - 18,x
     - MacPro3,1 - 6,1
-      - MacPro3,1 - 5,1 require Metal GPU installed.
       - MacPro3,1 can only boot with 4 cores max currently
+      - 8 cores can be re-enabled for older OSes in the GUI:
+        - Settings -> Build -> MacPro3,1/Xserve2,1 Workaround
     - Xserve2,1 - 3,1
-      - Requires Metal GPU installed.
       - Xserve2,1 can only boot with 4 cores max currently
+      - 8 cores can be re-enabled for older OSes in the GUI:
+        - Settings -> Build -> MacPro3,1/Xserve2,1 Workaround
   - Excludes the newly dropped MacBookAir8,x series.
+    - No estimate can be given when support will be added.
+  - For non-Metal graphics, Photos app will be broken.
     - No estimate can be given when support will be added.
 - Implement new MetallibSupportPkg system to support macOS Sequoia on Metal 3802-based GPUs.
   - See repository for more details: [MetallibSupportPkg](https://github.com/dortania/MetallibSupportPkg).
@@ -42,7 +117,7 @@
 - Resolve Memoji crashes on 3802 GPUs.
 - Resolve Photos Memories tab crash on Intel Ivy Bridge/Haswell iGPUs.
 - Increment Binaries:
-  - PatcherSupportPkg 1.6.3 - release
+  - PatcherSupportPkg 1.8.0 - release
   - OpenCorePkg 1.0.1 - release
   - Lilu 1.6.8 - release
   - WhateverGreen 1.6.7 - release

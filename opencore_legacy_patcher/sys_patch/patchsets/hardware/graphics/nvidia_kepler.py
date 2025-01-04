@@ -7,7 +7,6 @@ from ..base import BaseHardware, HardwareVariant, HardwareVariantGraphicsSubclas
 from ...base import PatchType
 
 from ...shared_patches.metal_3802      import LegacyMetal3802
-from ...shared_patches.big_sur_gva     import BigSurGVA
 from ...shared_patches.monterey_opencl import MontereyOpenCL
 from ...shared_patches.big_sur_opencl  import BigSurOpenCL
 from ...shared_patches.monterey_webkit import MontereyWebKit
@@ -50,10 +49,9 @@ class NvidiaKepler(BaseHardware):
             return True
 
         if self._xnu_major == os_data.monterey:
-            if self._xnu_minor > 0:
-                return True
-            if self._os_build != "21A5522h": # 12.0 Beta 7
-                return True
+            if self._xnu_minor <= 0:             # 12.0 Beta 8 increased XNU minor
+                if self._os_build != "21A5522h": # 12.0 Beta 7
+                    return True
 
         return False
 
@@ -131,7 +129,6 @@ class NvidiaKepler(BaseHardware):
 
         return {
             **LegacyMetal3802(self._xnu_major, self._xnu_minor, self._constants.detected_os_version).patches(),
-            **BigSurGVA(self._xnu_major, self._xnu_minor, self._constants.detected_os_version).patches(),
             **MontereyOpenCL(self._xnu_major, self._xnu_minor, self._constants.detected_os_version).patches(),
             **BigSurOpenCL(self._xnu_major, self._xnu_minor, self._constants.detected_os_version).patches(),
             **MontereyWebKit(self._xnu_major, self._xnu_minor, self._os_build).patches(),

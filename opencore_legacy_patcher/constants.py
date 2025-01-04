@@ -13,8 +13,8 @@ from .detections import device_probe
 class Constants:
     def __init__(self) -> None:
         # Patcher Versioning
-        self.patcher_version:                 str = "2.0.0"  # OpenCore-Legacy-Patcher
-        self.patcher_support_pkg_version:     str = "1.7.8"  # PatcherSupportPkg
+        self.patcher_version:                 str = "2.3.0"  # OpenCore-Legacy-Patcher
+        self.patcher_support_pkg_version:     str = "1.9.1"  # PatcherSupportPkg
         self.copyright_date:                  str = "Copyright © 2020-2024 Dortania"
         self.patcher_name:                    str = "OpenCore Legacy Patcher"
 
@@ -186,8 +186,8 @@ class Constants:
         self.custom_board_serial_number: str = ""  # Set SMBIOS board serial number
 
         ## FeatureUnlock Settings
-        self.fu_status:    bool = True  # Enable FeatureUnlock
-        self.fu_arguments: str  = None  # Set FeatureUnlock arguments
+        self.fu_status:    bool = False  # Enable FeatureUnlock
+        self.fu_arguments: str  = None   # Set FeatureUnlock arguments
 
         ## Security Settings
         self.sip_status:     bool = True  #  System Integrity Protection
@@ -234,6 +234,7 @@ class Constants:
         self.disable_connectdrivers: bool = False  # Disable ConnectDrivers (hibernation)
         self.set_vmm_cpuid:          bool = False  # Set VMM bit inside CPUID
         self.disable_mediaanalysisd: bool = False  # Set mediaanalysisd to spawn
+        self.force_quad_thread:      bool = False #  Force quad thread mode (cpus=4)
         self.set_alc_usage:          bool = True  #  Set AppleALC usage
         self.allow_3rd_party_drives: bool = True  #  Allow ThridPartyDrives quirk
         self.allow_nvme_fixing:      bool = True  #  Allow NVMe Kernel Space Patches
@@ -246,6 +247,7 @@ class Constants:
             os_data.os_data.monterey,
             os_data.os_data.ventura,
             os_data.os_data.sonoma,
+            os_data.os_data.sequoia,
         ]
 
     @property
